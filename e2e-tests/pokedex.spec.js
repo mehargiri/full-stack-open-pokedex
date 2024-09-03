@@ -10,4 +10,17 @@ describe('Pokedex', () => {
       )
     ).toBeVisible()
   })
+
+  test('pokemon page can be navigated to', async ({ page }) => {
+    await page.goto('/')
+    await page.getByText('ivysaur').click()
+    await page.waitForURL('**/pokemon/ivysaur')
+
+    const texts = ['overgrow', 'chlorophyll']
+
+    for (const text of texts) {
+      const div = page.locator('div.pokemon-ability-name')
+      await expect(div.locator(`text=${text}`)).toBeVisible()
+    }
+  })
 })

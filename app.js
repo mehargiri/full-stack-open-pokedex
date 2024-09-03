@@ -10,8 +10,9 @@ app.get('/version', (_req, res) => {
   return res.send('The current version is 2')
 })
 
-app.get('/health', (_req, res) => {
-  return res.send('ok')
+app.get('/health', () => {
+  // eslint-disable-next-line no-constant-condition
+  if (true) throw 'An dangerous error occurred'
 })
 
 app.listen(PORT, () => {

@@ -36,8 +36,29 @@ jobs:
           path: playwright-report/
           retention-days: 5
       - name: Deployment to Render.io
+        id: deploy
         if: ${{github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip')}}
         run: curl https://api.render.com/deploy/srv-${{secrets.RENDER_SERVICE_ID}}?key=${{secrets.RENDER_API_KEY}}
+      - name: Discord Webhook (Success)
+        if: ${{success() && steps.deploy.outcome == 'success'}}
+        uses: stegzilla/discord-notify@v2
+        with:
+          webhook_url: ${{secrets.DISCORD_WEBHOOK}}
+          username: 'FullStack Part 11 Web Hook'
+          avatar_url: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'
+          title: A new version of Pokedex has been deployed
+          message: "to ${{secrets.DEPLOYED_URL}}\n**by ${{github.triggering_actor}}**"
+          colour: '#00FF00'
+      - name: Discord Webhook (Failure)
+        if: ${{failure()}}
+        uses: stegzilla/discord-notify@v2
+        with:
+          webhook_url: ${{secrets.DISCORD_WEBHOOK}}
+          username: 'FullStack Part 11 Web Hook'
+          avatar_url: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'
+          title: 'Build has Failed :('
+          message: "**Commit**\n${{github.server_url}}/${{github.repository}}/commit${{github.sha}}\n**by ${{github.triggering_actor}} broke the build!**"
+          colour: '#FF0000'
   tag_release:
     needs: [simple_deployment_pipeline]
     timeout-minutes: 60

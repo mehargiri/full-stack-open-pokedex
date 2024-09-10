@@ -1,11 +1,11 @@
 name: Periodic Health Check Pipeline
 
 on:
-  schedule:
-    - cron: '20 * * * *'
-  # push:
-  #   branches:
-  #     - main
+  # schedule:
+  #   - cron: '20 * * * *'
+  push:
+    branches:
+      - main
 
 jobs:
   health_check:
